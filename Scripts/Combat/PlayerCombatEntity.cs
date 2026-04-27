@@ -250,7 +250,7 @@ namespace BLINK.RPGBuilder.Combat
         {
             foreach (var toggledAbility in ActiveToggledAbilities.Where(toggledAbility => Time.time >= toggledAbility.nextTrigger))
             {
-                if (!CombatManager.Instance.UseRequirementsMet(this, GetTarget(), toggledAbility.ability, toggledAbility.rank, true))
+                if (!CombatManager.Instance.UseRequirementsMet(this, GetTarget(), toggledAbility.ability, toggledAbility.rank, false, true))
                 {
                     RemoveToggledAbility(toggledAbility.ability);
                     return;
