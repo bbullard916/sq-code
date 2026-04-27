@@ -218,10 +218,9 @@ namespace BLINK.RPGBuilder.Combat
         }
         private void HandleGroundCasting()
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0) && !UIEvents.Instance.CursorHoverUI)
             {
-                CombatManager.Instance.EXECUTE_GROUND_ABILITY(this, CurrentAbilityCasted, RPGCombatDATA.CombatVisualActivationType.Activate , CurrentAbilityCastedCurRank);
-                GroundCasting = false;
+                ConfirmGroundAbility();
             }
             else if (Input.GetKeyDown(KeyCode.Mouse1))
             {
@@ -234,6 +233,13 @@ namespace BLINK.RPGBuilder.Combat
                 controllerEssentials.builtInController.StartCoroutine(
                     controllerEssentials.builtInController.UpdateCachedGroundCasting(false));
             }
+        }
+
+        public void ConfirmGroundAbility()
+        {
+            if (!GroundCasting) return;
+            CombatManager.Instance.EXECUTE_GROUND_ABILITY(this, CurrentAbilityCasted, RPGCombatDATA.CombatVisualActivationType.Activate, CurrentAbilityCastedCurRank);
+            GroundCasting = false;
         }
         
         protected override void HandleCombatState()
