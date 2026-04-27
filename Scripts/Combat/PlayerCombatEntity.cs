@@ -354,8 +354,10 @@ namespace BLINK.RPGBuilder.Combat
             if (!(Time.time >= _nextAutoAttack)) return;
             var abilityRef = GameDatabase.Instance.GetAbilities()[autoAttackData.CurrentAutoAttackAbilityID];
             if (abilityRef == null) return;
-            var rankRef = abilityRef.ranks[0];
-            if (rankRef != null) CombatManager.Instance.InitAbility(this, abilityRef, GetCurrentAbilityRank(abilityRef, false),false);
+            var rankRef = GetCurrentAbilityRank(abilityRef, false);
+            if (rankRef == null) return;
+            if (!rankRef.CanUseDuringGCD && CombatManager.Instance.currentGCD > 0) return;
+            CombatManager.Instance.InitAbility(this, abilityRef, rankRef, false);
         }
 
         protected override void UpdateActiveBlockingUI()
@@ -506,7 +508,7 @@ namespace BLINK.RPGBuilder.Combat
 
             if (!GameState.inCombatOverriden && GameDatabase.Instance.GetCombatSettings().AutomaticCombatStates)
             {
-                EnterCombat();
+                if (!InCombat) EnterCombat();
             }
 
             else if (!result.caster.IsPlayer() && !result.caster.IsInCombat() && !GameState.inCombatOverriden)
