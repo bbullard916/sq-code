@@ -368,7 +368,7 @@ namespace BLINK.RPGBuilder.Combat
 
         #region COMBAT INFO
 
-        protected bool IsAutoAttackReady()
+        public bool IsAutoAttackReady()
         {
             return Time.time >= _nextAutoAttack;
         }

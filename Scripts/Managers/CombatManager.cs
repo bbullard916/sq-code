@@ -961,6 +961,7 @@ namespace BLINK.RPGBuilder.Managers
                     break;
                 case RPGAbility.AbilityType.PlayerAutoAttack:
                     GameState.playerEntity.InitAACooldown(getAutoAttackCD());
+                    GameState.playerEntity.SetAutoAttacking(true);
                     break;
                 case RPGAbility.AbilityType.PlayerActionAbility:
                     GameState.playerEntity.InitActionAbilityCooldown(ability.ID,
