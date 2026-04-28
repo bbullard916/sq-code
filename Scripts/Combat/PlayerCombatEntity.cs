@@ -218,10 +218,9 @@ namespace BLINK.RPGBuilder.Combat
         }
         private void HandleGroundCasting()
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0) && !UIEvents.Instance.CursorHoverUI)
             {
-                CombatManager.Instance.EXECUTE_GROUND_ABILITY(this, CurrentAbilityCasted, RPGCombatDATA.CombatVisualActivationType.Activate , CurrentAbilityCastedCurRank);
-                GroundCasting = false;
+                ConfirmGroundAbility();
             }
             else if (Input.GetKeyDown(KeyCode.Mouse1))
             {
@@ -234,6 +233,13 @@ namespace BLINK.RPGBuilder.Combat
                 controllerEssentials.builtInController.StartCoroutine(
                     controllerEssentials.builtInController.UpdateCachedGroundCasting(false));
             }
+        }
+
+        public void ConfirmGroundAbility()
+        {
+            if (!GroundCasting) return;
+            CombatManager.Instance.EXECUTE_GROUND_ABILITY(this, CurrentAbilityCasted, RPGCombatDATA.CombatVisualActivationType.Activate, CurrentAbilityCastedCurRank);
+            GroundCasting = false;
         }
         
         protected override void HandleCombatState()
@@ -250,7 +256,7 @@ namespace BLINK.RPGBuilder.Combat
         {
             foreach (var toggledAbility in ActiveToggledAbilities.Where(toggledAbility => Time.time >= toggledAbility.nextTrigger))
             {
-                if (!CombatManager.Instance.UseRequirementsMet(this, GetTarget(), toggledAbility.ability, toggledAbility.rank, true))
+                if (!CombatManager.Instance.UseRequirementsMet(this, GetTarget(), toggledAbility.ability, toggledAbility.rank, false, true))
                 {
                     RemoveToggledAbility(toggledAbility.ability);
                     return;
@@ -354,8 +360,10 @@ namespace BLINK.RPGBuilder.Combat
             if (!(Time.time >= _nextAutoAttack)) return;
             var abilityRef = GameDatabase.Instance.GetAbilities()[autoAttackData.CurrentAutoAttackAbilityID];
             if (abilityRef == null) return;
-            var rankRef = abilityRef.ranks[0];
-            if (rankRef != null) CombatManager.Instance.InitAbility(this, abilityRef, GetCurrentAbilityRank(abilityRef, false),false);
+            var rankRef = GetCurrentAbilityRank(abilityRef, false);
+            if (rankRef == null) return;
+            if (!rankRef.CanUseDuringGCD && CombatManager.Instance.currentGCD > 0) return;
+            CombatManager.Instance.InitAbility(this, abilityRef, rankRef, false);
         }
 
         protected override void UpdateActiveBlockingUI()
@@ -366,7 +374,7 @@ namespace BLINK.RPGBuilder.Combat
 
         #region COMBAT INFO
 
-        protected bool IsAutoAttackReady()
+        public bool IsAutoAttackReady()
         {
             return Time.time >= _nextAutoAttack;
         }
@@ -506,7 +514,7 @@ namespace BLINK.RPGBuilder.Combat
 
             if (!GameState.inCombatOverriden && GameDatabase.Instance.GetCombatSettings().AutomaticCombatStates)
             {
-                EnterCombat();
+                if (!InCombat) EnterCombat();
             }
 
             else if (!result.caster.IsPlayer() && !result.caster.IsInCombat() && !GameState.inCombatOverriden)

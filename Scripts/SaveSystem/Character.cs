@@ -224,7 +224,7 @@ namespace BLINK.RPGBuilder.Characters
 
         public bool isAbilityCDReady(RPGAbility ab)
         {
-            if (ab.abilityType == RPGAbility.AbilityType.PlayerAutoAttack) return false;
+            if (ab.abilityType == RPGAbility.AbilityType.PlayerAutoAttack) return GameState.playerEntity != null && GameState.playerEntity.IsAutoAttackReady();
             return ab.abilityType == RPGAbility.AbilityType.PlayerActionAbility
                 ? CombatManager.Instance.actionAbIsReady(ab)
                 : CharacterData.Abilities.Where(t => t.ID == ab.ID).Any(t => t.NextTimeUse == 0);

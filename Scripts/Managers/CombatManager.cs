@@ -571,7 +571,7 @@ namespace BLINK.RPGBuilder.Managers
             return false;
         }
 
-        public bool UseRequirementsMet(CombatEntity casterInfo, CombatEntity targetInfo, RPGAbility ability, RPGAbility.RPGAbilityRankData rankREF, bool abMustBeKnown)
+        public bool UseRequirementsMet(CombatEntity casterInfo, CombatEntity targetInfo, RPGAbility ability, RPGAbility.RPGAbilityRankData rankREF, bool abMustBeKnown, bool isToggleTick = false)
         {
             if (casterInfo.IsMounted() && !rankREF.canUseWhileMounted)
             {
@@ -579,7 +579,7 @@ namespace BLINK.RPGBuilder.Managers
                 return false;
             }
             
-            if (casterInfo.IsPlayer() && !rankREF.CanUseDuringGCD && currentGCD > 0)
+            if (!isToggleTick && casterInfo.IsPlayer() && !rankREF.CanUseDuringGCD && rankREF.isGCD && currentGCD > 0)
             {
                 UIEvents.Instance.OnShowAlertMessage("Not ready to use abilities yet", 3);
                 return false;
@@ -961,6 +961,7 @@ namespace BLINK.RPGBuilder.Managers
                     break;
                 case RPGAbility.AbilityType.PlayerAutoAttack:
                     GameState.playerEntity.InitAACooldown(getAutoAttackCD());
+                    GameState.playerEntity.SetAutoAttacking(true);
                     break;
                 case RPGAbility.AbilityType.PlayerActionAbility:
                     GameState.playerEntity.InitActionAbilityCooldown(ability.ID,

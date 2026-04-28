@@ -113,7 +113,14 @@ public class ActionBarSlot : MonoBehaviour, IDragHandler, IEndDragHandler, IBegi
         switch (contentType)
         {
             case CharacterEntries.ActionBarSlotContentType.Ability:
-                CombatManager.Instance.InitAbility(GameState.playerEntity, thisAb, GameState.playerEntity.GetCurrentAbilityRank(thisAb, true),true);
+                if (GameState.playerEntity.GroundCasting)
+                {
+                    GameState.playerEntity.ConfirmGroundAbility();
+                }
+                else
+                {
+                    CombatManager.Instance.InitAbility(GameState.playerEntity, thisAb, GameState.playerEntity.GetCurrentAbilityRank(thisAb, true),true);
+                }
                 UIEvents.Instance.OnHideAbilityTooltip();
                 break;
             case CharacterEntries.ActionBarSlotContentType.Item:
