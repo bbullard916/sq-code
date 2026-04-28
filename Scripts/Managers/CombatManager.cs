@@ -579,7 +579,7 @@ namespace BLINK.RPGBuilder.Managers
                 return false;
             }
             
-            if (!isToggleTick && casterInfo.IsPlayer() && !rankREF.CanUseDuringGCD && currentGCD > 0)
+            if (!isToggleTick && casterInfo.IsPlayer() && !rankREF.CanUseDuringGCD && rankREF.cooldown > 0 && currentGCD > 0)
             {
                 UIEvents.Instance.OnShowAlertMessage("Not ready to use abilities yet", 3);
                 return false;
