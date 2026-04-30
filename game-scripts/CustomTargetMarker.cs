@@ -45,7 +45,7 @@ namespace BLINK.RPGBuilder.Managers
                     foreach (var marker in CurrentTarget.GetComponentsInChildren<CustomTargetMarker>())
                         marker.transform.forward = Camera.main.transform.forward;
                 }
-                if (CurrentTarget != null && !CurrentTarget.IsPlayer() && Input.GetMouseButton(0) && CurrentTarget.tag.Contains("enemy") && !CurrentTarget.IsDead())
+                if (CurrentTarget != null && !CurrentTarget.IsPlayer() && Input.GetMouseButtonDown(0) && CurrentTarget.tag.Contains("enemy") && !CurrentTarget.IsDead())
                 {
                     if (Vector3.Distance(CurrentTarget.transform.position, GameState.playerEntity.transform.position) <= 3)
                     {
@@ -59,7 +59,7 @@ namespace BLINK.RPGBuilder.Managers
                         }
                     }
                 }
-                else if (CurrentTarget != null && !CurrentTarget.IsPlayer() && Input.GetMouseButton(1) && CurrentTarget.tag.Contains("enemy") && !CurrentTarget.IsDead())
+                else if (CurrentTarget != null && !CurrentTarget.IsPlayer() && Input.GetMouseButtonDown(1) && CurrentTarget.tag.Contains("enemy") && !CurrentTarget.IsDead())
                 {
                     playerController = GameState.playerEntity.gameObject.GetComponent<TopDownClickToMoveController>();
                     ActionBarSlot Slot = ActionBarManager.Instance.actionBarSlots[1];
