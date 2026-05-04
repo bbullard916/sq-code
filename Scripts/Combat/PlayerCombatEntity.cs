@@ -987,6 +987,23 @@ namespace BLINK.RPGBuilder.Combat
         {
             if (controllerEssentials.motionActive) return;
             if(!rank.motionIgnoreUseCondition && !CombatManager.Instance.CombatNodeCanInitMotion(this)) return;
+
+            if (CurrentTarget != null)
+            {
+                var directionToTarget = CurrentTarget.transform.position - transform.position;
+                directionToTarget.y = 0;
+                if (directionToTarget != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(directionToTarget.normalized);
+                    var tpEssentials = controllerEssentials as BLINK.Controller.RPGBThirdPersonCharacterControllerEssentials;
+                    if (tpEssentials != null)
+                    {
+                        var currentControlRotation = tpEssentials.controller.GetControlRotation();
+                        tpEssentials.controller.SetControlRotation(new Vector2(currentControlRotation.x, transform.rotation.eulerAngles.y));
+                    }
+                }
+            }
+
             controllerEssentials.InitMotion(rank.motionDistance, rank.motionDirection, rank.motionSpeed, rank.isImmuneDuringMotion);
         }
         
