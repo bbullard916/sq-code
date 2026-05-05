@@ -996,6 +996,14 @@ namespace BLINK.RPGBuilder.Combat
                 directionToTarget.y = 0;
                 if (directionToTarget != Vector3.zero)
                 {
+                    var directionFromTargetToPlayer = -directionToTarget.normalized;
+                    var targetForward = CurrentTarget.transform.forward;
+                    targetForward.y = 0;
+                    if (Vector3.Dot(targetForward.normalized, directionFromTargetToPlayer) < 0f)
+                    {
+                        UIEvents.Instance.OnShowAlertMessage("Cannot execute ability: must be in front of the target", 3);
+                        return;
+                    }
                     transform.rotation = Quaternion.LookRotation(directionToTarget.normalized);
                     var tpEssentials = controllerEssentials as BLINK.Controller.RPGBThirdPersonCharacterControllerEssentials;
                     if (tpEssentials != null)
