@@ -988,6 +988,8 @@ namespace BLINK.RPGBuilder.Combat
             if (controllerEssentials.motionActive) return;
             if(!rank.motionIgnoreUseCondition && !CombatManager.Instance.CombatNodeCanInitMotion(this)) return;
 
+            float motionDistance = rank.motionDistance;
+
             if (CurrentTarget != null)
             {
                 var directionToTarget = CurrentTarget.transform.position - transform.position;
@@ -1001,10 +1003,17 @@ namespace BLINK.RPGBuilder.Combat
                         var currentControlRotation = tpEssentials.controller.GetControlRotation();
                         tpEssentials.controller.SetControlRotation(new Vector2(currentControlRotation.x, transform.rotation.eulerAngles.y));
                     }
+
+                    float flatDistanceToTarget = directionToTarget.magnitude;
+                    var targetCC = CurrentTarget.GetComponent<CharacterController>();
+                    float stopOffset = (controllerEssentials.charController != null ? controllerEssentials.charController.radius : 0.5f) +
+                                       (targetCC != null ? targetCC.radius : 0.5f);
+                    float cappedDistance = Mathf.Max(0f, flatDistanceToTarget - stopOffset);
+                    motionDistance = Mathf.Min(motionDistance, cappedDistance);
                 }
             }
 
-            controllerEssentials.InitMotion(rank.motionDistance, rank.motionDirection, rank.motionSpeed, rank.isImmuneDuringMotion);
+            controllerEssentials.InitMotion(motionDistance, rank.motionDirection, rank.motionSpeed, rank.isImmuneDuringMotion);
         }
         
         public override void InitMount(RPGEffect effect, int rank)
